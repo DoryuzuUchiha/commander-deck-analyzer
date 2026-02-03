@@ -1,30 +1,20 @@
-from collections import Counter
+def summarize_functions(deck):
+    summary = {
+        "ramp": 0,
+        "draw": 0,
+        "removal": 0
+    }
 
+    for card in deck.cards:
+        caps = deck.capabilities.get(card.name, {})
 
-def generate_tag_statistics(deck):
-    """
-    Generates tag-based statistics from the deck.
-    """
+        if caps.get("mana"):
+            summary["ramp"] += card.count
 
-    tag_counts = Counter()
+        if caps.get("draw"):
+            summary["draw"] += card.count
 
-    for card, qty in deck.cards:
-        for tag in card.tags:
-            tag_counts[tag] += qty
+        if caps.get("removal"):
+            summary["removal"] += card.count
 
-    stats = {}
-
-    stats["tag_counts"] = dict(tag_counts)
-
-    # Existing derived stats (unchanged)
-    stats["lands"] = tag_counts.get("land", 0)
-    stats["total_ramp"] = tag_counts.get("ramp", 0)
-    stats["card_draw"] = tag_counts.get("card_draw", 0)
-    stats["tutors"] = tag_counts.get("tutor", 0)
-    stats["interaction"] = (
-        tag_counts.get("single_target_removal", 0)
-        + tag_counts.get("board_wipe", 0)
-        + tag_counts.get("counterspell", 0)
-    )
-
-    return stats
+    return summary

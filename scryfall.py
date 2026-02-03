@@ -1,27 +1,30 @@
-import requests
-import json
 import os
+import json
+import time
+import requests
 
-CACHE_DIR = "cache"
+SCRYFALL_API = "https://api.scryfall.com/cards/named"
+CACHE_DIR = "cache/scryfall"
 
-def _cache_path(name):
-    safe = name.lower().replace(" ", "_").replace(",", "")
-    return os.path.join(CACHE_DIR, f"{safe}.json")
-
-def get_card(name):
+def fetch_card(name):
     os.makedirs(CACHE_DIR, exist_ok=True)
-    path = _cache_path(name)
+    path = os.path.join(CACHE_DIR, f"{name}.json")
 
     if os.path.exists(path):
-        with open(path) as f:
+        with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
 
-    url = "https://api.scryfall.com/cards/named"
-    r = requests.get(url, params={"exact": name})
-    r.raise_for_status()
-    card = r.json()
+    response = requests.get(SCRYFALL_API, params={"exact": name})
+    if response.status_code != 200:
+        raise RuntimeError(f"Failed to fetch card: {name}")
 
-    with open(path, "w") as f:
-        json.dump(card, f, indent=2)
+    data = response.json()
 
-    return card
+    if "oracle_id" not in data:
+        raise RuntimeError(f"No oracle_id for card: {name}")
+
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+    time.sleep(0.1)
+    return data
