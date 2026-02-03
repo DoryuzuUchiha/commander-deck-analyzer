@@ -1,88 +1,86 @@
-1 Abandon Attachments
-1 Accumulate Wisdom
+1 Aberrant Return
 1 Arcane Signet
-1 Archmage Emeritus
-1 Azula, Cunning Usurper
-1 Badlands
-1 Balmor, Battlemage Captain
-1 Big Score
-1 Bolt Bend
-1 Bria, Riptide Rogue
-1 Cascade Bluffs
-1 Clairvoyance
-1 Combustion Technique
+1 Archfiend of Ifnir
+1 Assassin's Trophy
+1 Auntie Ool, Cursewretch
+1 Black Sun's Zenith
+1 Blight Rot
+1 Blight Sickle
+1 Blowfly Infestation
+1 Bogslither's Embrace
+1 Canyon Slough
+1 Carnifex Demon
+1 Cathartic Reunion
+1 Channeler Initiate
+1 Chimil, the Inner Sun
+1 Cinder Glade
 1 Command Tower
-1 Consider
-1 Cursed Mirror
-1 Day of Black Sun
-1 Deflecting Swat
-1 Demand Answers
+1 Contagion Clasp
+1 Darkness Descends
+1 Devoted Druid
 1 Dragonskull Summit
-1 Electro, Assaulting Battery
-1 Ember Island Production
-1 Endwalker
+1 Dread Tiller
+1 Eventide's Shadow
+1 Everflowing Chalice
+1 Everlasting Torment
+1 Evolution Sage
 1 Exotic Orchard
-1 Fated Firepower
-1 Ferrous Lake
-1 Fire Nation Occupation
-1 Firebender Ascension
-1 Firebending Lesson
-1 Firebending Student
-1 Fists of Flame
-1 Forger's Foundry
-1 Frantic Search
-1 Frostboil Snarl
-1 Goblin Electromancer
-1 Hydroelectric Specimen
-1 Increasing Vengeance
-1 Iroh, Dragon of the West
-6 Island
-1 Izzet Signet
-1 Laughing Mad
-1 Lightning Strike
-1 Longshot, Rebel Bowman
-1 Mistrise Village
-6 Mountain
-1 Octopus Form
-1 Opt
-1 Overwhelming Victory
-1 Ozai, the Phoenix King
+1 Ferrafor, Young Yew
+1 Festering Thicket
+1 Flourishing Defenses
+6 Forest
+1 Generous Patron
+1 Glissa Sunslayer
+1 Golgari Rot Farm
+1 Grave Venerations
+1 Grim Affliction
+1 Grim Poppet
+1 Gristle Glutton
+1 Gruul Turf
+1 Hapatra, Vizier of Poisons
+1 Hollowmurk Siege
+1 Ignoble Hierarch
+1 Incremental Blight
+1 Kulrath Knight
+1 Lasting Tarfire
+1 Liliana, Death Wielder
+1 Massacre Girl, Known Killer
+1 Midnight Banshee
+4 Mountain
+1 Moxite Refinery
+1 Necroskitter
+1 Nesting Grounds
+1 Oft-Nabbed Goat
 1 Path of Ancestry
-1 Pinnacle Monk
-1 Price of Freedom
-1 Radical Idea
-1 Ral, Storm Conduit
-1 Rousing Refrain
-1 Rush of Inspiration
-1 Sazacap's Brew
-1 Secret Tunnel
-1 Seething Song
-1 Shivan Reef
-1 Silent-Blade Oni
-1 Silundi Vision
-1 Sol Ring
-1 Solstice Revelations
-1 Spell Pierce
-1 Storm-Kiln Artist
-1 Stormcarved Coast
-1 Stormcatch Mentor
-1 Sulfur Falls
-1 Sunset Strikemaster
-4 Swamp
-1 Talisman of Creativity
-1 The Blue Spirit
-1 The Last Agni Kai
-1 The Legend of Roku
-1 Thrill of Possibility
-1 Twinferno
-1 Ty Lee, Artful Acrobat
-1 Underground Sea
-1 Valley Floodcaller
-1 Vandalblast
-1 Veyran, Voice of Duality
-1 Volcanic Island
-1 Wan Shi Tong, Librarian
-1 White Lotus Hideout
-1 Winged Boots
+1 Persist
+1 Power Conduit
+1 Puca's Covenant
+1 Puppeteer Clique
+1 Rakdos Carnarium
+1 Riveteers Overlook
+1 Rootbound Crag
+1 Savage Lands
+1 Scheming Aspirant
+1 Scuzzback Scrounger
+1 Sheltered Thicket
+1 Sinister Gnarlbark
+1 Skinrender
+1 Smoldering Marsh
+1 Soul Snuffers
+1 Staff of Compleation
+1 Stigma Lasher
+8 Swamp
+1 Terramorphic Expanse
+1 The Scorpion God
+1 Three Visits
+1 Tree of Perdition
+1 Unnatural Restoration
+1 Vernal Fen
+1 Village Pillagers
+1 Vraska, Betrayal's Sting
+1 Warren Torchmaster
+1 Wickerbough Elder
+1 Wickersmith's Tools
+1 Woodland Cemetery
 
-1 Fire Lord Azula
+1 The Reaper, King No More
