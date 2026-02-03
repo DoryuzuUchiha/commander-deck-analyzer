@@ -1,0 +1,74 @@
+1 Abandon Attachments
+1 Accumulate Wisdom
+1 Apex of Power
+1 Arcane Infusion
+1 Arcane Signet
+1 Archmage Emeritus
+1 Astrologian's Planisphere
+1 Caldera Pyremaw
+1 Cascade Bluffs
+1 Chemister's Insight
+1 Combat Tutorial
+1 Command Tower
+1 Consider
+1 Counterspell
+1 Curiosity
+1 Dawn Warriors' Legacy
+1 Deep Analysis
+1 Deliberate
+1 Dirgur Island Dragon
+1 Electro, Assaulting Battery
+1 Endwalker
+1 Everdream
+1 Expressive Iteration
+1 Ferrous Lake
+1 Flame of Anor
+1 Frostboil Snarl
+1 Goblin Electromancer
+1 Grapeshot
+1 Hermes, Overseer of Elpis
+1 Hit the Mother Lode
+1 Inside Out
+1 Into the Flood Maw
+17 Island
+1 Izzet Signet
+1 Lier, Disciple of the Drowned
+1 Lock and Load
+1 Longshot, Rebel Bowman
+1 Mana Geyser
+12 Mountain
+1 Octopus Form
+1 Opt
+1 Past in Flames
+1 Ponder
+1 Portent
+1 Ral, Monsoon Mage
+1 Riptide Laboratory
+1 Runaway Steam-Kin
+1 Runechanter's Pike
+1 Sazacap's Brew
+1 Seething Anger
+1 Sentinel Tower
+1 Serum Visions
+1 Shivan Reef
+1 Shore Up
+1 Sleight of Hand
+1 Sorcerer Class
+1 Spell Pierce
+1 Springleaf Drum
+1 Storm-Kiln Artist
+1 Stormcatch Mentor
+1 Sulfur Falls
+1 Sunset Strikemaster
+1 Talisman of Creativity
+1 Tandem Lookout
+1 Telling Time
+1 The Emperor of Palamecia
+1 Think Twice
+1 Twisted Image
+1 Untimely Malfunction
+1 Veyran, Voice of Duality
+1 Windfall
+1 Young Pyromancer
+
+1 Vivi Ornitier
