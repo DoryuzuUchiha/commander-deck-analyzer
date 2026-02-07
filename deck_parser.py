@@ -3,7 +3,11 @@ def parse_deck(input_data):
     Accepts either:
     - a file path
     - raw decklist text
-    Returns (cards, commander_name)
+
+    Returns:
+    - flat_cards: list[str]     (expanded by quantity)
+    - unique_cards: list[str]   (unique names, for bulk fetch)
+    - commander_name: str
     """
 
     if "\n" in input_data:
@@ -12,7 +16,8 @@ def parse_deck(input_data):
         with open(input_data, "r", encoding="utf-8") as f:
             lines = f.readlines()
 
-    cards = []
+    flat_cards = []
+    unique_cards = []
     commander = None
 
     for line in lines:
@@ -26,10 +31,15 @@ def parse_deck(input_data):
         except ValueError:
             continue
 
+        # Track unique cards once (for Scryfall batch fetch)
+        if name not in unique_cards:
+            unique_cards.append(name)
+
+        # Expand quantities for gameplay logic
         for _ in range(qty):
-            cards.append(name)
+            flat_cards.append(name)
 
         # Assume last listed card is commander (EDH-style)
         commander = name
 
-    return cards, commander
+    return flat_cards, unique_cards, commander

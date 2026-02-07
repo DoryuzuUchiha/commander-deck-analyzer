@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mulligan Simulation • Arcane Deck Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <h1>Mulligan Simulation</h1>
+        <p class="subtitle">
+            A probabilistic glimpse into your deck’s opening hands
+        </p>
+    </header>
+
+    <!-- ================= OVERVIEW ================= -->
+    <section class="panel highlight">
+        <h2>Simulation Overview</h2>
+
+        <ul class="stat-list">
+            <li>
+                <span>Iterations</span>
+                <strong>{{ results.iterations }}</strong>
+            </li>
+            <li>
+                <span>Average Mulligans</span>
+                <strong>{{ results.mulligans.avg_mulls | round(2) }}</strong>
+            </li>
+        </ul>
+
+        <p class="hint">
+            These results are generated using Monte Carlo simulations.
+            Expect slight variance between runs.
+        </p>
+    </section>
+
+    <div class="grid">
+
+        <section class="panel">
+            <h3>Mulligan Outcomes</h3>
+            <ul class="stat-list">
+                <li><span>Keep 7</span><strong>{{ results.mulligans.keep_7_pct | round(1) }}%</strong></li>
+                <li><span>Mull to 6</span><strong>{{ results.mulligans.mull_1_pct | round(1) }}%</strong></li>
+                <li><span>Mull to 5</span><strong>{{ results.mulligans.mull_2_pct | round(1) }}%</strong></li>
+                <li><span>Mull to 4+</span><strong>{{ results.mulligans.mull_3_plus_pct | round(1) }}%</strong></li>
+            </ul>
+        </section>
+
+        <section class="panel">
+            <h3>Early Game Stability</h3>
+            <ul class="stat-list">
+                <li><span>Turn 1 Land</span><strong>{{ results.early_game.t1_land_pct | round(1) }}%</strong></li>
+                <li><span>Turn 2 Land</span><strong>{{ results.early_game.t2_land_pct | round(1) }}%</strong></li>
+                <li><span>Turn 3 Land</span><strong>{{ results.early_game.t3_land_pct | round(1) }}%</strong></li>
+                <li><span>Color Screw (T3)</span><strong>{{ results.early_game.color_screw_t3_pct | round(1) }}%</strong></li>
+            </ul>
+        </section>
+
+        <section class="panel wide">
+            <h3>Interpretation</h3>
+            <p class="flavor">
+                Mulligan simulations do not predict individual games.
+                They reveal trends — how often your deck rewards patience,
+                and how harshly it punishes risky keeps.
+            </p>
+            <p class="hint">
+                High keep-7 rates suggest consistency.
+                High mull-to-5+ rates often indicate mana imbalance.
+            </p>
+        </section>
+
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+        <form method="POST" action="/analyze">
+            <input type="hidden" name="decklist" value="{{ results.decklist }}">
+            <button type="submit">
+                ← Back to Deck Profile
+            </button>
+        </form>
+        <p style="margin-top:10px;">
+            Built with mana, math, and a little magic ✨
+        </p>
+    </footer>
+
+</div>
+
+</body>
+</html>

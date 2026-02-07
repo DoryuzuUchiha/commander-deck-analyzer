@@ -57,7 +57,6 @@
     <!-- ================= GRID ================= -->
     <div class="grid">
 
-        <!-- ===== CARD FLOW ===== -->
         <section class="panel">
             <h3>Card Flow</h3>
             <ul class="stat-list">
@@ -67,11 +66,10 @@
             </ul>
         </section>
 
-        <!-- ===== COLOR DEMAND ===== -->
         <section class="panel mana">
             <h3>Color Demand (Spells)</h3>
             <table>
-                {% for color, count in profile.color_demand.raw_pips.items() %}
+                {% for color, count in profile.color_demand.pips.items() %}
                 <tr>
                     <td class="pip {{ color }}">{{ color }}</td>
                     <td>{{ count }} pips</td>
@@ -81,11 +79,10 @@
             <p class="hint">Based on colored mana requirements in spells</p>
         </section>
 
-        <!-- ===== MANA SUPPLY ===== -->
         <section class="panel mana">
             <h3>Mana Supply (Lands)</h3>
             <table>
-                {% for color, value in profile.mana_supply.fractional_sources.items() %}
+                {% for color, value in profile.mana_supply.effective_sources.items() %}
                 <tr>
                     <td class="pip {{ color }}">{{ color }}</td>
                     <td>{{ value | round(2) }} sources</td>
@@ -93,27 +90,24 @@
                 {% endfor %}
             </table>
             <p class="hint">
-                {{ profile.mana_supply.multicolor_land_count }}
-                multicolor lands out of {{ profile.mana_supply.total_lands }}
+                {{ profile.mana_supply.producing_lands | length }}
+                producing lands total
             </p>
         </section>
 
-        <!-- ===== CASTABILITY ===== -->
         <section class="panel highlight">
             <h3>Castability Snapshot</h3>
             <table>
                 {% for entry in profile.castability %}
                 <tr>
-                    <td>{{ entry.card }}</td>
-                    <td>Turn {{ entry.turn }}</td>
+                    <td>{{ entry.color }}</td>
                     <td>{{ (entry.probability * 100) | round(1) }}%</td>
                 </tr>
                 {% endfor %}
             </table>
-            <p class="hint">Probability of casting key spells on curve</p>
+            <p class="hint">Probability of having the right mana early</p>
         </section>
 
-        <!-- ===== VARIANCE ===== -->
         <section class="panel">
             <h3>Consistency & Variance</h3>
             <ul class="stat-list">
@@ -132,29 +126,21 @@
             </ul>
         </section>
 
-        <!-- ===== MULLIGAN ===== -->
+        <!-- ===== MULLIGAN ACTION ===== -->
         <section class="panel wide">
             <h3>Mulligan Simulation</h3>
-            <div class="mulligan-grid">
-                <div>
-                    <span class="label">Keep Rate</span>
-                    <span class="value">{{ analysis.mulligan_simulation.keep_rate }}%</span>
-                </div>
-                <div>
-                    <span class="label">Avg Mulligans</span>
-                    <span class="value">{{ analysis.mulligan_simulation.average_mulligans }}</span>
-                </div>
-                <div>
-                    <span class="label">Simulations</span>
-                    <span class="value">{{ analysis.mulligan_simulation.simulations }}</span>
-                </div>
-            </div>
 
-            <div class="hand-quality">
-                <span>Excellent {{ analysis.mulligan_simulation.hand_quality.excellent }}%</span>
-                <span>Keepable {{ analysis.mulligan_simulation.hand_quality.keepable }}%</span>
-                <span>Bad {{ analysis.mulligan_simulation.hand_quality.bad }}%</span>
-            </div>
+            <p class="hint">
+                Mulligan analysis uses Monte Carlo simulations and can take several seconds.
+                Run it only if you want deeper consistency insights.
+            </p>
+
+            <form method="POST" action="/mulligans">
+                <input type="hidden" name="decklist" value="{{ decklist }}">
+                <button type="submit">
+                    Run Mulligan Simulation
+                </button>
+            </form>
         </section>
 
     </div>
@@ -182,7 +168,6 @@
             <textarea
                 name="decklist"
                 rows="14"
-                style="width:100%; margin-top:10px;"
                 placeholder="Paste your decklist here..."
                 required
             ></textarea>
