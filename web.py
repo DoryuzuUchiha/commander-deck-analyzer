@@ -1,50 +1,46 @@
 from flask import Flask, render_template, request
-import io
-import sys
-
-from cli import main as run_cli_analysis
+from deck import Deck
+from deck_parser import parse_deck
+from capabilities import fetch_card_data, extract_capabilities
+from deck_profile import DeckProfile   # ✅ NEW
 
 app = Flask(__name__)
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    output = ""
+    return render_template("index.html", analysis=None, profile=None)
 
-    if request.method == "POST":
-        raw_text = request.form.get("decklist", "")
 
-        # Remove empty lines and trim whitespace
-        lines = [line.strip() for line in raw_text.splitlines() if line.strip()]
+@app.route("/analyze", methods=["POST"])
+def analyze():
+    decklist = request.form.get("decklist", "")
+    cards, commander_name = parse_deck(decklist)
 
-        if len(lines) >= 2:
-            cards = lines[:-1]
-            commander = lines[-1]
+    # Fetch commander card object
+    commander_card = fetch_card_data(commander_name)
 
-            # Exactly one blank line before commander
-            deck_text = "\n".join(cards) + "\n\n" + commander
-        else:
-            deck_text = "\n".join(lines)
+    # Build capabilities for all cards in the deck
+    card_capabilities = {}
+    for card_name in set(cards):
+        card = fetch_card_data(card_name)
+        card_capabilities[card_name] = extract_capabilities(card)
 
-        # Write deck.txt
-        with open("deck.txt", "w", encoding="utf-8") as f:
-            f.write(deck_text)
+    # Create deck and inject capabilities
+    deck = Deck(cards, commander_card)
+    deck.card_capabilities = card_capabilities
 
-        # Capture stdout
-        buffer = io.StringIO()
-        old_stdout = sys.stdout
-        sys.stdout = buffer
+    # Existing analysis (KEEP)
+    analysis = deck.analyze()
 
-        try:
-            run_cli_analysis()
-        except Exception as e:
-            output = f"ERROR:\n{e}"
-        finally:
-            sys.stdout = old_stdout
+    # ✅ NEW: Build deck profile
+    profile = DeckProfile(deck, analysis).build()
 
-        output = buffer.getvalue()
-
-    return render_template("index.html", output=output)
+    return render_template(
+        "index.html",
+        analysis=analysis,
+        profile=profile
+    )
 
 
 if __name__ == "__main__":

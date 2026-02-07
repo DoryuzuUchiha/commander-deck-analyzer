@@ -438,3 +438,12 @@ def optimize_deck(deck):
         "improvements": list(dict.fromkeys(improvements)),
         "suggested_cuts": list(dict.fromkeys(cuts))
     }
+
+# add at bottom of analysis.py
+
+def analyze_deck(deck):
+    return {
+        "mana_curve": deck.mana_curve(),
+        "tags": deck.tag_breakdown(),
+        "colors": deck.colors()
+    }

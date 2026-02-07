@@ -1,36 +1,40 @@
-from deck import Deck
-from capabilities import fetch_card_data, extract_capabilities
 from deck_parser import parse_deck
+from capabilities import fetch_card_data, extract_capabilities
+from deck import Deck
+import json
+import os
+
+DECK_PATH = "deck.txt"
+CACHE_PATH = "cache/analysis.json"
 
 
 def main():
     # Parse deck.txt
-    parsed_cards, commander_name = parse_deck("deck.txt")
-    deck = Deck(parsed_cards, commander_name)
+    cards, commander_name = parse_deck(DECK_PATH)
 
-    # ------------------------------
-    # FETCH COMMANDER (MANDATORY)
-    # ------------------------------
-    commander_data = fetch_card_data(commander_name, commander_name)
-    commander_caps = extract_capabilities(commander_data)
+    # Fetch commander data
+    commander_data = fetch_card_data(commander_name)
 
-    deck.set_commander_capabilities(
-        commander_caps,
-        commander_caps.get("cmc")
-    )
+    # Initialize deck
+    deck = Deck(cards, commander_data)
 
-    # ------------------------------
-    # FETCH ALL DECK CARDS
-    # ------------------------------
-    for card in deck.cards:
-        card_data = fetch_card_data(card.name, commander_name)
-        card_caps = extract_capabilities(card_data)
-        deck.add_card_capabilities(card.name, card_caps)
+    # Fetch and analyze each card
+    for card_name in cards:
+        card_data = fetch_card_data(card_name)
+        caps = extract_capabilities(card_data)
+        deck.add_card_capabilities(card_name, caps)
 
-    # ------------------------------
-    # ANALYZE
-    # ------------------------------
-    deck.analyze()
+    # Run analysis
+    analysis = deck.analyze()
+
+    # Ensure cache directory exists
+    os.makedirs("cache", exist_ok=True)
+
+    # Save analysis
+    with open(CACHE_PATH, "w", encoding="utf-8") as f:
+        json.dump(analysis, f, indent=2)
+
+    print("Analysis complete.")
 
 
 if __name__ == "__main__":

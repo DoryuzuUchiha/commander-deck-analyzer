@@ -2,66 +2,197 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Deck Analyzer</title>
-    <style>
-        body {
-            font-family: monospace;
-            background: #0f172a;
-            color: #e5e7eb;
-            padding: 20px;
-        }
-
-        h1 {
-            color: #38bdf8;
-        }
-
-        textarea {
-            width: 100%;
-            height: 300px;
-            background: #020617;
-            color: #e5e7eb;
-            border: 1px solid #334155;
-            padding: 10px;
-            font-family: monospace;
-        }
-
-        button {
-            margin-top: 10px;
-            padding: 10px 20px;
-            background: #38bdf8;
-            border: none;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        pre {
-            margin-top: 20px;
-            padding: 15px;
-            background: #020617;
-            border: 1px solid #334155;
-            white-space: pre-wrap;
-        }
-    </style>
+    <title>Arcane Deck Analysis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
-<h1>Deck Analyzer</h1>
+{% if analysis and profile %}
 
-<form method="post">
-    <p>Paste your deck list (this becomes <code>deck.txt</code>):</p>
+<div class="app">
 
-    <textarea name="decklist" placeholder="Commander Name
-1 Sol Ring
-1 Arcane Signet
-..."></textarea>
+    <!-- ================= HEADER ================= -->
+    <header class="header">
+        <h1>Arcane Deck Analysis</h1>
+        <p class="subtitle">A deep look into mana, flow, and consistency</p>
+    </header>
 
-    <br>
-    <button type="submit">Analyze Deck</button>
-</form>
+    <!-- ================= COMMANDER ================= -->
+    <section class="panel commander">
+        <h2>Commander</h2>
+        <div class="commander-grid">
+            <div>
+                <span class="label">Name</span>
+                <span class="value">{{ analysis.commander.name }}</span>
+            </div>
+            <div>
+                <span class="label">Color Identity</span>
+                <span class="value">
+                    {{ analysis.commander.color_identity | join(" • ") }}
+                </span>
+            </div>
+            <div>
+                <span class="label">Playstyle</span>
+                <span class="value">{{ analysis.commander.playstyle }}</span>
+            </div>
+        </div>
+        <p class="flavor">{{ analysis.commander.explanation }}</p>
+    </section>
 
-{% if output %}
-    <h2>Analysis Output</h2>
-    <pre>{{ output }}</pre>
+    <!-- ================= DECK PROFILE ================= -->
+    <section class="panel">
+        <h2>Deck Profile</h2>
+        <ul class="stat-list">
+            <li><span>Deck Size</span><strong>{{ profile.identity.deck_size }}</strong></li>
+            <li><span>Lands</span><strong>{{ profile.identity.land_count }}</strong></li>
+            <li><span>Spells</span><strong>{{ profile.identity.spell_count }}</strong></li>
+            <li><span>Colors</span><strong>{{ profile.identity.colors | join(" • ") }}</strong></li>
+            <li><span>Avg Mana Value</span><strong>{{ profile.identity.avg_mana_value }}</strong></li>
+        </ul>
+        <p class="hint">{{ profile.summary }}</p>
+    </section>
+
+    <!-- ================= GRID ================= -->
+    <div class="grid">
+
+        <!-- ===== CARD FLOW ===== -->
+        <section class="panel">
+            <h3>Card Flow</h3>
+            <ul class="stat-list">
+                <li><span>Cantrips</span><strong>{{ analysis.counts.cantrips }}</strong></li>
+                <li><span>Burst Draw</span><strong>{{ analysis.counts.burst_draw }}</strong></li>
+                <li><span>Draw Engines</span><strong>{{ analysis.counts.draw_engines }}</strong></li>
+            </ul>
+        </section>
+
+        <!-- ===== COLOR DEMAND ===== -->
+        <section class="panel mana">
+            <h3>Color Demand (Spells)</h3>
+            <table>
+                {% for color, count in profile.color_demand.raw_pips.items() %}
+                <tr>
+                    <td class="pip {{ color }}">{{ color }}</td>
+                    <td>{{ count }} pips</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <p class="hint">Based on colored mana requirements in spells</p>
+        </section>
+
+        <!-- ===== MANA SUPPLY ===== -->
+        <section class="panel mana">
+            <h3>Mana Supply (Lands)</h3>
+            <table>
+                {% for color, value in profile.mana_supply.fractional_sources.items() %}
+                <tr>
+                    <td class="pip {{ color }}">{{ color }}</td>
+                    <td>{{ value | round(2) }} sources</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <p class="hint">
+                {{ profile.mana_supply.multicolor_land_count }}
+                multicolor lands out of {{ profile.mana_supply.total_lands }}
+            </p>
+        </section>
+
+        <!-- ===== CASTABILITY ===== -->
+        <section class="panel highlight">
+            <h3>Castability Snapshot</h3>
+            <table>
+                {% for entry in profile.castability %}
+                <tr>
+                    <td>{{ entry.card }}</td>
+                    <td>Turn {{ entry.turn }}</td>
+                    <td>{{ (entry.probability * 100) | round(1) }}%</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <p class="hint">Probability of casting key spells on curve</p>
+        </section>
+
+        <!-- ===== VARIANCE ===== -->
+        <section class="panel">
+            <h3>Consistency & Variance</h3>
+            <ul class="stat-list">
+                <li>
+                    <span>Expected Lands by Turn 4</span>
+                    <strong>{{ profile.variance.expected_lands_turn_4 }}</strong>
+                </li>
+                <li>
+                    <span>Screw Risk</span>
+                    <strong>{{ (profile.variance.screw_risk * 100) | round(1) }}%</strong>
+                </li>
+                <li>
+                    <span>Flood Risk</span>
+                    <strong>{{ (profile.variance.flood_risk * 100) | round(1) }}%</strong>
+                </li>
+            </ul>
+        </section>
+
+        <!-- ===== MULLIGAN ===== -->
+        <section class="panel wide">
+            <h3>Mulligan Simulation</h3>
+            <div class="mulligan-grid">
+                <div>
+                    <span class="label">Keep Rate</span>
+                    <span class="value">{{ analysis.mulligan_simulation.keep_rate }}%</span>
+                </div>
+                <div>
+                    <span class="label">Avg Mulligans</span>
+                    <span class="value">{{ analysis.mulligan_simulation.average_mulligans }}</span>
+                </div>
+                <div>
+                    <span class="label">Simulations</span>
+                    <span class="value">{{ analysis.mulligan_simulation.simulations }}</span>
+                </div>
+            </div>
+
+            <div class="hand-quality">
+                <span>Excellent {{ analysis.mulligan_simulation.hand_quality.excellent }}%</span>
+                <span>Keepable {{ analysis.mulligan_simulation.hand_quality.keepable }}%</span>
+                <span>Bad {{ analysis.mulligan_simulation.hand_quality.bad }}%</span>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="footer">
+        <p>Built with mana, math, and a little magic ✨</p>
+    </footer>
+
+</div>
+
+{% else %}
+
+<!-- ================= LANDING PAGE ================= -->
+<div class="app">
+    <header class="header">
+        <h1>Arcane Deck Analysis</h1>
+        <p class="subtitle">
+            Submit a decklist to reveal its mana balance, flow, and consistency.
+        </p>
+    </header>
+
+    <section class="panel">
+        <form method="POST" action="/analyze">
+            <label class="label">Paste your decklist</label>
+            <textarea
+                name="decklist"
+                rows="14"
+                style="width:100%; margin-top:10px;"
+                placeholder="Paste your decklist here..."
+                required
+            ></textarea>
+            <button type="submit" style="margin-top:16px;">
+                Analyze Deck
+            </button>
+        </form>
+    </section>
+</div>
+
 {% endif %}
 
 </body>

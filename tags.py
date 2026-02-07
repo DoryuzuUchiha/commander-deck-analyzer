@@ -1,17 +1,24 @@
-"""
-tags.py
+from oracle_parser import parse_oracle
 
-Lightweight fallback tags when a card has no otags.
-This should NEVER override otags.
-"""
 
-def fallback_tags(card):
+def get_tags(card):
     tags = set()
 
-    if card.is_land:
-        tags.add("land")
+    oracle = card.get("oracle_text", "")
+    effects = parse_oracle(oracle)
 
-    if card.cmc <= 2:
-        tags.add("early_game")
+    for effect in effects:
+        if effect.category == "draw":
+            tags.add("draw")
+            if effect.repeatable:
+                tags.add("repeatable_draw")
 
-    return tags
+        if effect.category == "ramp":
+            tags.add("ramp")
+            if effect.repeatable:
+                tags.add("repeatable_ramp")
+
+    # Keep your existing tag logic intact below this line
+    # (artifacts, removal, etc.)
+
+    return sorted(tags)

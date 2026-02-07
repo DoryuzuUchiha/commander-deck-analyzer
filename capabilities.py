@@ -1,55 +1,84 @@
-import os
-import json
+import re
 import requests
 
-SCRYFALL_API = "https://api.scryfall.com/cards/named"
+SCRYFALL_URL = "https://api.scryfall.com/cards/named"
 
 
-def get_deck_cache_dir(commander_name):
-    safe = commander_name.replace(" ", "_")
-    path = os.path.join("cache", "decks", safe)
-    os.makedirs(path, exist_ok=True)
-    return path
+def fetch_card_data(name):
+    resp = requests.get(SCRYFALL_URL, params={"exact": name})
+    resp.raise_for_status()
+    return resp.json()
 
 
-def fetch_card_data(card_name, commander_name, use_cache=True):
-    cache_dir = get_deck_cache_dir(commander_name)
-    path = os.path.join(cache_dir, f"{card_name}.json")
-
-    if use_cache and os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-
-    response = requests.get(SCRYFALL_API, params={"exact": card_name})
-    response.raise_for_status()
-    data = response.json()
-
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-
-    return data
-
-
-def extract_capabilities(card_data):
+def extract_capabilities(card):
     caps = {
         "types": [],
         "mana": [],
         "draw": [],
-        "cmc": card_data.get("cmc"),
-        "color_identity": card_data.get("color_identity", [])
+        # ✅ REQUIRED for mana saturation
+        "card": {
+            "mana_cost": card.get("mana_cost", "")
+        }
     }
 
-    type_line = card_data.get("type_line", "").lower()
+    # ---------- TYPES ----------
+    type_line = card.get("type_line", "").lower()
     caps["types"] = type_line.split()
 
-    # Mana production (ONLY repeatable if permanent)
-    produced = card_data.get("produced_mana", [])
-    if produced and ("artifact" in caps["types"] or "creature" in caps["types"] or "land" in caps["types"]):
-        caps["mana"].append({
-            "produces": produced,
-            "repeatable": True,
-            "source": "land" if "land" in caps["types"] else "nonland",
-            "enters_tapped": False
+    oracle = card.get("oracle_text", "").lower()
+
+    # ---------- MANA PRODUCTION ----------
+    add_clauses = re.findall(r"add\s+([^\n\.]+)", oracle)
+
+    for clause in add_clauses:
+        produces = set()
+
+        if "any color" in clause:
+            produces.update(["W", "U", "B", "R", "G"])
+        else:
+            if "w" in clause: produces.add("W")
+            if "u" in clause: produces.add("U")
+            if "b" in clause: produces.add("B")
+            if "r" in clause: produces.add("R")
+            if "g" in clause: produces.add("G")
+            if "c" in clause: produces.add("C")
+
+        if produces:
+            caps["mana"].append({
+                "produces": list(produces)
+            })
+
+    # ---------- DRAW DETECTION ----------
+    if re.search(r"draw (a|one|\d+) card", oracle):
+        repeatable = any(
+            kw in oracle for kw in
+            ["whenever", "at the beginning", "each time"]
+        )
+
+        is_cantrip = (
+            not repeatable
+            and card.get("cmc", 99) <= 2
+        )
+
+        engine_type = None
+        if repeatable:
+            if "instant or sorcery" in oracle:
+                engine_type = "spellslinger"
+            elif "deals damage" in oracle:
+                engine_type = "combat"
+            elif "opponent" in oracle:
+                engine_type = "tax"
+            else:
+                engine_type = "generic"
+
+        caps["draw"].append({
+            "category": (
+                "engine" if repeatable else
+                "cantrip" if is_cantrip else
+                "burst"
+            ),
+            "repeatable": repeatable,
+            "engine_type": engine_type,
         })
 
     return caps

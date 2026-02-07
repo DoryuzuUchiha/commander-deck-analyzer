@@ -1,148 +1,157 @@
-BASIC_LANDS = {
-    "Plains", "Island", "Swamp", "Mountain", "Forest", "Wastes"
-}
-
-COLOR_SYMBOLS = {"W", "U", "B", "R", "G"}
-
-
-class Card:
-    def __init__(self, name, count=1):
-        self.name = name
-        self.count = count
+from oracle_parser import analyze_commander, parse_mana_cost
+from simulations import simulate_mulligans
 
 
 class Deck:
-    def __init__(self, parsed_cards, commander_name):
-        self.cards = [Card(name, count) for count, name in parsed_cards]
-        self.capabilities = {}
+    def __init__(self, cards, commander):
+        if isinstance(commander, list):
+            commander = commander[0]
 
-        self.commander_name = commander_name
-        self.commander_cmc = None
-        self.commander_colors = set()
+        self.cards = cards
+        self.commander = commander
+        self.card_capabilities = {}
+        self.commander_intent = None
 
-    def set_commander_capabilities(self, caps, cmc):
-        self.commander_cmc = cmc
-        self.commander_colors = {
-            c for c in caps.get("color_identity", [])
-            if c in COLOR_SYMBOLS
-        }
+        self._analyze_commander()
+
+    def _analyze_commander(self):
+        oracle = self.commander.get("oracle_text", "")
+        self.commander_intent = analyze_commander(oracle)
+
+
 
     def add_card_capabilities(self, name, caps):
-        self.capabilities[name] = caps
-
-    def basic_land_count(self):
-        return sum(c.count for c in self.cards if c.name in BASIC_LANDS)
-
-    def nonbasic_land_count(self):
-        return sum(
-            c.count for c in self.cards
-            if c.name not in BASIC_LANDS
-            and "land" in self.capabilities.get(c.name, {}).get("types", [])
-        )
-
-    def total_land_count(self):
-        return self.basic_land_count() + self.nonbasic_land_count()
+        self.card_capabilities[name] = caps
 
     def analyze(self):
-        from analysis import (
-            count_ramp,
-            count_burst_draw,
-            count_draw_engines,
-            list_repeatable_ramp,
-            list_burst_draw,
-            list_draw_engines,
-            commander_on_curve_probability,
-            mana_sources_by_color,
-            color_saturation,
-            ideal_color_sources,
-            simulate_mulligans,
-            simulate_early_game,
-            deck_summary_score,
-            optimize_deck
+        lands = 0
+        ramp = 0
+        cantrips = 0
+        burst_draw = 0
+        draw_engines = 0
+
+        commander_colors = set(self.commander.get("color_identity", []))
+
+        # 🔹 LAND-ONLY mana sources (tap-based)
+        mana_sources = {c: 0 for c in commander_colors}
+        mana_demand = {c: 0 for c in commander_colors}
+
+        for name in self.cards:
+            caps = self.card_capabilities.get(name, {})
+            card = caps.get("card", {})
+
+            is_land = "land" in caps.get("types", [])
+
+            # ---------- LAND COUNT ----------
+            if is_land:
+                lands += 1
+
+                # Count how many colors this land can tap for
+                produces = set()
+                for src in caps.get("mana", []):
+                    produces.update(src.get("produces", []))
+
+                for c in produces:
+                    if c in mana_sources:
+                        mana_sources[c] += 1
+
+            # ---------- RAMP (unchanged) ----------
+            if not is_land and caps.get("mana"):
+                ramp += 1
+
+            # ---------- DRAW ----------
+            for d in caps.get("draw", []):
+                if d["category"] == "cantrip":
+                    cantrips += 1
+                elif d["category"] == "burst":
+                    burst_draw += 1
+                elif d["category"] == "engine":
+                    draw_engines += 1
+
+            # ---------- MANA SATURATION ----------
+            pip_counts = parse_mana_cost(card.get("mana_cost", ""))
+            for color, count in pip_counts.items():
+                if color in mana_demand:
+                    mana_demand[color] += count
+
+        # ---------- SATURATION MATH ----------
+        total_pips = sum(mana_demand.values())
+
+        if total_pips == 0:
+            saturation_percentages = {c: 0 for c in commander_colors}
+            ideal_distribution = {c: 0 for c in commander_colors}
+            ideal_land_counts = {c: 0 for c in commander_colors}
+        else:
+            saturation_percentages = {
+                c: round((mana_demand[c] / total_pips) * 100)
+                for c in commander_colors
+            }
+
+            ideal_distribution = dict(saturation_percentages)
+
+            ideal_land_counts = {
+                c: round((mana_demand[c] / total_pips) * lands)
+                for c in commander_colors
+            }
+
+        mulligans = simulate_mulligans(
+            cards=self.cards,
+            card_capabilities=self.card_capabilities,
+            color_identity=list(commander_colors),
+            simulations=5000
         )
 
-        print("\nDeck Analysis")
-        print("------------")
-        print(f"Commander: {self.commander_name}")
-        print(f"Commander colors: {''.join(sorted(self.commander_colors))}")
-        print(f"Lands: {self.total_land_count()}")
+        return {
+            "commander": {
+                "name": self.commander.get("name"),
+                "color_identity": list(commander_colors),
+                "playstyle": self.commander_intent.primary,
+                "explanation": self.commander_intent.explanation,
+            },
+            "counts": {
+                "lands": lands,
+                "ramp": ramp,
+                "cantrips": cantrips,
+                "burst_draw": burst_draw,
+                "draw_engines": draw_engines,
+            },
 
-        print("\nRepeatable Ramp:")
-        for c in list_repeatable_ramp(self):
-            print(f"  - {c}")
+            # 🔹 ACTUAL land taps
+            "mana_sources": mana_sources,
 
-        print("\nBurst Draw:")
-        for c in list_burst_draw(self):
-            print(f"  - {c}")
+            # 🔹 SPELL DEMAND
+            "mana_saturation": {
+                "raw": mana_demand,
+                "total_pips": total_pips,
+                "percentages": saturation_percentages,
 
-        print("\nRepeatable Draw Engines:")
-        for c in list_draw_engines(self):
-            print(f"  - {c}")
+                # 🔧 BACKWARD COMPATIBILITY (for existing template)
+                # This is still a % and matches saturation by definition
+                "ideal_distribution": dict(saturation_percentages),
+            },
 
-        print(f"\nCommander on-curve probability: {commander_on_curve_probability(self):.1f}%")
+            # 🔹 NEW: IDEAL LAND COUNTS (what you actually want)
+            "ideal_mana_sources": ideal_land_counts,
 
-        print("\nMana sources by color:")
-        sources = mana_sources_by_color(self)
-        for c, n in sources.items():
-            print(f"  {c}: {n}")
+            "mulligan_simulation": mulligans,
+        }
+    # add to Deck class in deck.py
 
-        print("\nColor Saturation:")
-        sat = color_saturation(self)
-        for c, pct in sat["percentages"].items():
-            print(f"  {c}: {pct:.1f}%")
+    def lands(self):
+        return [c for c in self.cards if c.is_land()]
 
-        print("\nIdeal Mana Sources:")
-        ideal = ideal_color_sources(self, sum(sources.values()))
-        for c, n in ideal.items():
-            print(f"  {c}: {n}")
+    def spells(self):
+        return [c for c in self.cards if not c.is_land()]
 
-        print("\nMulligan Simulation (10k runs):")
-        for k, v in simulate_mulligans(self).items():
-            print(f"  {k}: {v:.2f}")
+    def land_count(self):
+        return len(self.lands())
 
-        print("\nEarly Game Consistency (Turns 1–3):")
-        early = simulate_early_game(self)
-        for k, v in early.items():
-            print(f"  {k}: {v:.1f}%")
-        print("\nDeck Consistency Score:")
-        score = deck_summary_score(self)
+    def spell_count(self):
+        return len(self.spells())
 
-        print(f"  Total Score: {score['total_score']} / 100")
-        print(f"    Mulligans: {score['mulligan_score']}/25")
-        print(f"    Land drops: {score['land_score']}/25")
-        print(f"    Early plays: {score['play_score']}/25")
-        print(f"    Color stability: {score['color_score']}/25")
-
-        if score["total_score"] >= 85:
-            tier = "Excellent"
-        elif score["total_score"] >= 70:
-            tier = "Good"
-        elif score["total_score"] >= 55:
-            tier = "Playable"
-        else:
-            tier = "Inconsistent"
-
-        print(f"  Tier: {tier}")
-
-        print("\nOptimization Recommendations")
-        print("----------------------------")
-
-        opt = optimize_deck(self)
-
-        print(f"Primary Issue: {opt['primary_issue']}")
-
-        if opt["issues"]:
-            print("\nProblems Detected:")
-            for i in opt["issues"]:
-                print(f"  - {i}")
-
-        if opt["improvements"]:
-            print("\nRecommended Improvements:")
-            for r in opt["improvements"]:
-                print(f"  - {r}")
-
-        if opt["suggested_cuts"]:
-            print("\nSuggested Cuts (Theoretical):")
-            for c in opt["suggested_cuts"]:
-                print(f"  - {c}")
+    def colors(self):
+        colors = set()
+        for card in self.spells():
+            colors.update(card.colors)
+        return colors
 

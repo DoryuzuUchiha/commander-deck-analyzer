@@ -1,86 +1,74 @@
-1 Aberrant Return
-1 Arcane Signet
-1 Archfiend of Ifnir
-1 Assassin's Trophy
-1 Auntie Ool, Cursewretch
-1 Black Sun's Zenith
-1 Blight Rot
-1 Blight Sickle
-1 Blowfly Infestation
-1 Bogslither's Embrace
-1 Canyon Slough
-1 Carnifex Demon
-1 Cathartic Reunion
-1 Channeler Initiate
-1 Chimil, the Inner Sun
-1 Cinder Glade
-1 Command Tower
-1 Contagion Clasp
-1 Darkness Descends
-1 Devoted Druid
-1 Dragonskull Summit
-1 Dread Tiller
-1 Eventide's Shadow
-1 Everflowing Chalice
-1 Everlasting Torment
-1 Evolution Sage
-1 Exotic Orchard
-1 Ferrafor, Young Yew
-1 Festering Thicket
-1 Flourishing Defenses
-6 Forest
-1 Generous Patron
-1 Glissa Sunslayer
-1 Golgari Rot Farm
-1 Grave Venerations
-1 Grim Affliction
-1 Grim Poppet
-1 Gristle Glutton
-1 Gruul Turf
-1 Hapatra, Vizier of Poisons
-1 Hollowmurk Siege
-1 Ignoble Hierarch
-1 Incremental Blight
-1 Kulrath Knight
-1 Lasting Tarfire
-1 Liliana, Death Wielder
-1 Massacre Girl, Known Killer
-1 Midnight Banshee
-4 Mountain
-1 Moxite Refinery
-1 Necroskitter
-1 Nesting Grounds
-1 Oft-Nabbed Goat
-1 Path of Ancestry
-1 Persist
-1 Power Conduit
-1 Puca's Covenant
-1 Puppeteer Clique
-1 Rakdos Carnarium
-1 Riveteers Overlook
-1 Rootbound Crag
-1 Savage Lands
-1 Scheming Aspirant
-1 Scuzzback Scrounger
-1 Sheltered Thicket
-1 Sinister Gnarlbark
-1 Skinrender
-1 Smoldering Marsh
-1 Soul Snuffers
-1 Staff of Compleation
-1 Stigma Lasher
-8 Swamp
-1 Terramorphic Expanse
-1 The Scorpion God
-1 Three Visits
-1 Tree of Perdition
-1 Unnatural Restoration
-1 Vernal Fen
-1 Village Pillagers
-1 Vraska, Betrayal's Sting
-1 Warren Torchmaster
-1 Wickerbough Elder
-1 Wickersmith's Tools
-1 Woodland Cemetery
-
-1 The Reaper, King No More
+1 Abandon Attachments
+1 Accumulate Wisdom
+1 Apex of Power
+1 Arcane Infusion
+1 Arcane Signet
+1 Archmage Emeritus
+1 Astrologian's Planisphere
+1 Caldera Pyremaw
+1 Cascade Bluffs
+1 Chemister's Insight
+1 Combat Tutorial
+1 Command Tower
+1 Consider
+1 Counterspell
+1 Curiosity
+1 Dawn Warriors' Legacy
+1 Deep Analysis
+1 Deliberate
+1 Dirgur Island Dragon
+1 Electro, Assaulting Battery
+1 Endwalker
+1 Everdream
+1 Expressive Iteration
+1 Ferrous Lake
+1 Flame of Anor
+1 Frostboil Snarl
+1 Goblin Electromancer
+1 Grapeshot
+1 Hermes, Overseer of Elpis
+1 Hit the Mother Lode
+1 Inside Out
+1 Into the Flood Maw
+17 Island
+1 Izzet Signet
+1 Lier, Disciple of the Drowned
+1 Lock and Load
+1 Longshot, Rebel Bowman
+1 Mana Geyser
+12 Mountain
+1 Octopus Form
+1 Opt
+1 Past in Flames
+1 Ponder
+1 Portent
+1 Ral, Monsoon Mage
+1 Riptide Laboratory
+1 Runaway Steam-Kin
+1 Runechanter's Pike
+1 Sazacap's Brew
+1 Seething Anger
+1 Sentinel Tower
+1 Serum Visions
+1 Shivan Reef
+1 Shore Up
+1 Sleight of Hand
+1 Sorcerer Class
+1 Spell Pierce
+1 Springleaf Drum
+1 Storm-Kiln Artist
+1 Stormcatch Mentor
+1 Sulfur Falls
+1 Sunset Strikemaster
+1 Talisman of Creativity
+1 Tandem Lookout
+1 Telling Time
+1 The Emperor of Palamecia
+1 Think Twice
+1 Twisted Image
+1 Untimely Malfunction
+1 Veyran, Voice of Duality
+1 Windfall
+1 Young Pyromancer
+
+1 Vivi Ornitier

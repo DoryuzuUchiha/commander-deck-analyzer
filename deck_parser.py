@@ -1,63 +1,35 @@
-def parse_deck(path):
+def parse_deck(input_data):
     """
-    Parses a Commander decklist.
-
-    Format:
-      <main deck>
-      (blank line)
-      <commander>
-
-    Example:
-      1 Sol Ring
-      17 Island
-      12 Mountain
-
-      1 Vivi Ornitier
+    Accepts either:
+    - a file path
+    - raw decklist text
+    Returns (cards, commander_name)
     """
 
-    with open(path, "r", encoding="utf-8") as f:
-        lines = [line.rstrip("\n") for line in f]
+    if "\n" in input_data:
+        lines = input_data.splitlines()
+    else:
+        with open(input_data, "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
-    # Split on first blank line
-    if "" not in lines:
-        raise ValueError(
-            "Decklist must contain a blank line separating the commander."
-        )
+    cards = []
+    commander = None
 
-    split_index = lines.index("")
-    main_lines = lines[:split_index]
-    commander_lines = lines[split_index + 1 :]
-
-    if not commander_lines:
-        raise ValueError("Commander section is empty.")
-
-    # Parse main deck
-    main_cards = []
-    for line in main_lines:
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-
-        count, name = line.split(" ", 1)
-        main_cards.append((int(count), name.strip()))
-
-    # Parse commander
-    commander_cards = []
-    for line in commander_lines:
+    for line in lines:
         line = line.strip()
         if not line:
             continue
 
-        count, name = line.split(" ", 1)
-        commander_cards.append((int(count), name.strip()))
+        try:
+            qty, name = line.split(" ", 1)
+            qty = int(qty)
+        except ValueError:
+            continue
 
-    if len(commander_cards) != 1:
-        raise ValueError(
-            "Commander section must contain exactly one card."
-        )
+        for _ in range(qty):
+            cards.append(name)
 
-    commander_count, commander_name = commander_cards[0]
-    if commander_count != 1:
-        raise ValueError("Commander count must be exactly 1.")
+        # Assume last listed card is commander (EDH-style)
+        commander = name
 
-    return main_cards, commander_name
+    return cards, commander
